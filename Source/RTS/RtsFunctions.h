@@ -19,6 +19,9 @@ class RTS_API URtsFunctions : public UBlueprintFunctionLibrary
 		static void ReadStringFromFile(FString File, FString& String);
 
 	UFUNCTION(BlueprintPure, Category = "File")
+		static void SeperateLines(TArray<FString> &Array, FString String, bool CullEmpty = true) { String.ParseIntoArrayLines(Array, CullEmpty); };
+
+	UFUNCTION(BlueprintPure, Category = "File")
 		static UTexture2D* ReadPNGFile(FString File);
 	
 	UFUNCTION(BluePrintPure, Category = "File")

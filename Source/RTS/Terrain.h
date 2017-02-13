@@ -55,6 +55,7 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Terrain") float Height;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Terrain") float ZOffset;
 	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Terrain") UMaterial* Material;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Terrain") bool Replicate;
 
 	UFUNCTION(BlueprintCallable)
 	void LoadHeightmap(FString Path);

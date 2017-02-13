@@ -95,6 +95,9 @@ ATerrain::ATerrain()
 	Mesh = CreateDefaultSubobject<UProceduralMeshComponent>(TEXT("Mesh"));
 	SetRootComponent(Mesh);
 
+	SetReplicates(Replicate);
+	Mesh->SetIsReplicated(Replicate);
+
 	PrimaryActorTick.bCanEverTick = false;
 
 	Width = Length = 10000;

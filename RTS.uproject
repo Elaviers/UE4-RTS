@@ -111,10 +111,6 @@
 			"Enabled": false
 		},
 		{
-			"Name": "OnlineSubsystemNull",
-			"Enabled": false
-		},
-		{
 			"Name": "KDevelopSourceCodeAccess",
 			"Enabled": false
 		},

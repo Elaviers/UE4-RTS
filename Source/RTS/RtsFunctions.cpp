@@ -1,6 +1,14 @@
 #include "RTS.h"
 #include "RtsFunctions.h"
 
+void URtsFunctions::WriteBinaryFile(TArray<uint8> data, FString file, bool & Success) {
+	Success = FFileHelper::SaveArrayToFile(data, *(FPaths::GameDir() + file));
+}
+
+void URtsFunctions::ReadBinaryFile(FString file, TArray<uint8>& bytes, bool & Success) {
+	Success = FFileHelper::LoadFileToArray(bytes, *(FPaths::GameDir() + file));
+}
+
 void URtsFunctions::WriteStringToFile(FString i,FString file,bool & Success) {
 	Success = FFileHelper::SaveStringToFile(i, *(FPaths::GameDir() + file));
 }
@@ -9,6 +17,7 @@ void URtsFunctions::ReadStringFromFile(FString file,FString &string) {
 	FFileHelper::LoadFileToString(string, *(FPaths::GameDir() + file));
 }
 
+//Reading pngs
 void URtsFunctions::ReadPNGRaw(FString file, TArray<uint8>& Data, int32 &Width, int32 &Height) {
 	FString Path = FPaths::GameDir() + file;
 
@@ -42,48 +51,6 @@ void URtsFunctions::ReadPNGRaw(FString file, TArray<uint8>& Data, int32 &Width, 
 			Data = *reversed;
 		}
 	}
-}
-
-void URtsFunctions::ReadPNGRaw16(FString file, TArray<uint8>& Data, int32 &Width, int32 &Height) {
-	FString Path = FPaths::GameDir() + file;
-
-	UTexture2D* LoadedT2D = NULL;
-
-	IImageWrapperModule& ImageWrapperModule = FModuleManager::LoadModuleChecked<IImageWrapperModule>(FName("ImageWrapper"));
-
-	IImageWrapperPtr ImageWrapper = ImageWrapperModule.CreateImageWrapper(EImageFormat::PNG);
-
-	TArray<uint8> RawFileData;
-	if (!FFileHelper::LoadFileToArray(RawFileData, *Path))
-	{
-		return;
-	}
-
-	if (ImageWrapper.IsValid() && ImageWrapper->SetCompressed(RawFileData.GetData(), RawFileData.Num()))
-	{
-		const TArray<uint8>* raw = NULL;
-		if (ImageWrapper->GetRaw(ERGBFormat::Gray, 16, raw))
-		{
-			Width = ImageWrapper->GetWidth();
-			Height = ImageWrapper->GetHeight();
-			Data = *raw;
-		}
-	}
-}
-
-TArray<FVector> URtsFunctions::LoadHeightmapFromPNG(FString Path, float Width, float Length, float Height) {
-	TArray <FVector> ret;
-
-	int w = 0, h = 0;
-	TArray<uint8> raw;
-	ReadPNGRaw(Path, raw, w, h);
-	float stepx = Width / (float)w, stepy = Height / (float)h;
-
-	for (int r = 0; r < h; r++)
-		for (int c = 0; c < w; c++)
-			ret.Add(FVector(r * stepx,c * stepx, raw[r * w + c] * Height));
-
-	return ret;
 }
 
 UTexture2D* URtsFunctions::ReadPNGFile(FString file) {
@@ -129,6 +96,7 @@ UTexture2D* URtsFunctions::ReadPNGFile(FString file) {
 	return LoadedT2D;
 }
 
+//returns filenames in a directory
 TArray<FString> URtsFunctions::FindAllFilesInDirectory(FString p,FString filename) {
 	if (filename == "")
 		filename = "*.*";
@@ -144,6 +112,7 @@ TArray<FString> URtsFunctions::FindAllFilesInDirectory(FString p,FString filenam
 	return Files;
 }
 
+//Stringpair
 void URtsFunctions::GetValueOfProperty(TArray<FStringPair> arr,FString property,FString Default,FString& ret,bool& Found) {
 	for (FStringPair pair : arr)
 		if (pair.Property == property) {
@@ -165,6 +134,7 @@ bool URtsFunctions::Equals(TArray<FStringPair> a, TArray<FStringPair> b) {
 	return true;
 }
 
+//
 UTexture2D* URtsFunctions::ConstructRuntimeTexture2D(UTextureRenderTarget2D *target,int Width,int Height) {
 	//return target->ConstructTexture2D(Outer,Name,RF_NoFlags,EConstructTextureFlags::CTF_SRGB);
 
@@ -211,6 +181,7 @@ UTexture2D* URtsFunctions::ConstructRuntimeTexture2D(UTextureRenderTarget2D *tar
 	return Result;
 }
 
+//FINDING
 UMaterial* URtsFunctions::FindMaterial(FString Path) {
 	if (Path == "") return NULL;
 
@@ -222,4 +193,19 @@ UStaticMesh* URtsFunctions::FindStaticMesh(FString Path)
 	if (Path == "") return NULL;
 
 	return Cast<UStaticMesh>(StaticLoadObject(UStaticMesh::StaticClass(), NULL, *Path));
+}
+
+//CONVERSIONS
+TArray<uint8> URtsFunctions::FloatToBytes(float f) {
+	uint8* raw = (uint8*)&f;
+	TArray<uint8> data;
+	for (int i = 0; i < sizeof(float); i++)
+		data.Add(raw[i]);
+	return data;
+}
+
+float URtsFunctions::BytesToFloat(TArray<uint8> Bytes) {
+	float f;
+	memcpy(&f,Bytes.GetData(),sizeof(f));
+	return f;
 }

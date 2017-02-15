@@ -11,7 +11,6 @@ ARtsPlayerBase::ARtsPlayerBase()
 
 	RotLock = true;
 
-	MoveSpeed = 250;
 	Sensitivity = 2;
 	LowerLimit = -90;
 	UpperLimit = 90;
@@ -30,34 +29,13 @@ ARtsPlayerBase::ARtsPlayerBase()
 	Collision->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 	Collision->SetCollisionObjectType(ECC_Pawn);
 
-	Collision->SetIsReplicated(true);
-	Camera->SetIsReplicated(true);
-
 	TraceChannel = ECC_Camera;
-}
-
-void ARtsPlayerBase::SendTransformToServer_Implementation(const FTransform &t, const float camPitch) {
-	SetActorTransform(t);
-	Camera->SetRelativeRotation(FRotator(camPitch,0,0));
-}
-
-bool ARtsPlayerBase::SendTransformToServer_Validate(const FTransform &t,const float c) {
-	return true;
-}
-
-// Called when the game starts or when spawned
-void ARtsPlayerBase::BeginPlay()
-{
-	Super::BeginPlay();
-	
 }
 
 // Called every frame
 void ARtsPlayerBase::Tick( float DeltaTime )
 {
 	Super::Tick( DeltaTime );
-
-	if (IsLocallyControlled())SendTransformToServer(GetActorTransform(),Camera->RelativeRotation.Pitch);
 
 	APlayerController *pc = UGameplayStatics::GetPlayerController(GetWorld(), 0);
 	FHitResult hit;
@@ -66,30 +44,30 @@ void ARtsPlayerBase::Tick( float DeltaTime )
 }
 
 void ARtsPlayerBase::moveX(float axis) {
-	AddMovementInput(Camera->GetForwardVector(),axis * MoveSpeed);
+	AddMovementInput(Camera->GetForwardVector(),axis);
 }
 
 void ARtsPlayerBase::moveY(float axis) {
-	AddMovementInput(Camera->GetRightVector(), axis * MoveSpeed);
+	AddMovementInput(Camera->GetRightVector(), axis);
 }
 
 void ARtsPlayerBase::moveZ(float axis) {
-	AddMovementInput(Camera->GetUpVector(), axis * MoveSpeed);
+	AddMovementInput(Camera->GetUpVector(), axis);
 }
 
 void ARtsPlayerBase::mouseX(float axis) {
 	if (!RotLock)
-		AddActorLocalRotation(FRotator(0, (axis * Sensitivity * GetWorld()->DeltaTimeSeconds), 0));
+		AddActorLocalRotation(FRotator(0, (axis * Sensitivity), 0));
 }
 
 void ARtsPlayerBase::mouseY(float axis) {
 	if (!RotLock) {
-		Camera->SetRelativeRotation(FRotator(FMath::ClampAngle(Camera->RelativeRotation.Pitch + (axis * Sensitivity * GetWorld()->DeltaTimeSeconds),LowerLimit,UpperLimit),0,0));
+		Camera->SetRelativeRotation(FRotator(FMath::ClampAngle(Camera->RelativeRotation.Pitch + (axis * Sensitivity),LowerLimit,UpperLimit),0,0));
 	}
 }
 
 // Called to bind functionality to input
-void ARtsPlayerBase::SetupPlayerInputComponent(class UInputComponent* InputComponent)
+void ARtsPlayerBase::SetupPlayerInputComponent(UInputComponent* InputComponent)
 {
 	Super::SetupPlayerInputComponent(InputComponent);
 

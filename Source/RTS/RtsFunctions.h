@@ -2,7 +2,6 @@
 
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "ImageWrapper.h"
-#include "StringPair.h"
 #include "RtsFunctions.generated.h"
 
 UCLASS()
@@ -35,31 +34,28 @@ class RTS_API URtsFunctions : public UBlueprintFunctionLibrary
 		static UTexture2D* ReadPNGFile(FString File);
 	
 	//
-	UFUNCTION(BluePrintPure, Category = "File")
+	UFUNCTION(BlueprintPure, Category = "File")
 		static TArray<FString> FindAllFilesInDirectory(FString Directory,FString FileName);
-	
-	//
-	UFUNCTION(BluePrintPure, Category = "Utilities|Array|StringPair")
-		static void GetValueOfProperty(TArray<FStringPair> Array,FString Property, FString Default,FString& Value,bool& Found);
-
-	UFUNCTION(BluePrintPure, Category = "Utilities|CustomObject")
-		static bool Equals(TArray<FStringPair> one, TArray<FStringPair> two);
 
 	//
-	UFUNCTION(BluePrintPure, Category = "Rendering")
+	UFUNCTION(BlueprintPure, Category = "Rendering")
 		static UTexture2D* ConstructRuntimeTexture2D(UTextureRenderTarget2D *target,int Width = 256,int Height = 256);
 
 	//
-	UFUNCTION(BluePrintPure)
+	UFUNCTION(BlueprintPure)
 		static UMaterial* FindMaterial(FString Path);
 
-	UFUNCTION(BluePrintPure)
+	UFUNCTION(BlueprintPure)
 		static UStaticMesh* FindStaticMesh(FString Path);
 
 	//
-	UFUNCTION(BluePrintPure,meta=(CompactNodeTitle="->", BlueprintAutocast),Category="Math|Conversions")
+	UFUNCTION(BlueprintPure, meta=(CompactNodeTitle="->", BlueprintAutocast),Category="Math|Conversions")
 		static TArray<uint8> FloatToBytes(float Float);
 
-	UFUNCTION(BluePrintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast), Category = "Math|Conversions")
+	UFUNCTION(BlueprintPure, meta = (CompactNodeTitle = "->", BlueprintAutocast), Category = "Math|Conversions")
 		static float BytesToFloat(TArray<uint8> Bytes);
+
+	//
+	UFUNCTION(BlueprintCallable, meta = (CompactNodeTitle = "LOG"))
+		static void LogString(FString string) { GLog->Log(string); };
 };

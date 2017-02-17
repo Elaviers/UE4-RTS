@@ -112,28 +112,6 @@ TArray<FString> URtsFunctions::FindAllFilesInDirectory(FString p,FString filenam
 	return Files;
 }
 
-//Stringpair
-void URtsFunctions::GetValueOfProperty(TArray<FStringPair> arr,FString property,FString Default,FString& ret,bool& Found) {
-	for (FStringPair pair : arr)
-		if (pair.Property == property) {
-			Found = true;
-			ret = pair.Value;
-			return;
-		}
-	ret = Default;
-	Found = false;
-}
-
-bool URtsFunctions::Equals(TArray<FStringPair> a, TArray<FStringPair> b) {
-	if (a.Num() != b.Num())return false;
-	
-	for (int i = 0; i < a.Num(); i++)
-		if (a[i].Property != b[i].Property || a[i].Value != b[i].Value)
-			return false;
-
-	return true;
-}
-
 //
 UTexture2D* URtsFunctions::ConstructRuntimeTexture2D(UTextureRenderTarget2D *target,int Width,int Height) {
 	//return target->ConstructTexture2D(Outer,Name,RF_NoFlags,EConstructTextureFlags::CTF_SRGB);
